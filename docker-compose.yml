@@ -5,4 +5,8 @@ services:
       context: ./server
       target: 'development'
     volumes:
-      - ./server/src:/home/go/src
+      - ./server/src:/home/rust/src
+
+      - crates:/usr/local/cargo
+volumes:
+  crates:

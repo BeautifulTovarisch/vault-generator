@@ -1,30 +1,34 @@
-FROM golang:1.13.5 AS build
+FROM rust:1.31.0 AS development
 
-WORKDIR /go/src
+RUN useradd rust -m
 
-RUN useradd go -M
+WORKDIR /home/rust
 
-COPY ./src /go/src/vault-generator
+RUN curl -L http://eradman.com/entrproject/code/entr-4.3.tar.gz -o entr-4.3 \
+    && tar xvf entr-4.3 -C /tmp \
+    && cd /tmp/entr-4.3 \
+    && ./configure; make \
+    && ln -s /tmp/entr-4.3/entr /usr/local/bin
 
-RUN ls -l /go/src/vault-generator
+COPY src ./src
+COPY Cargo.toml Cargo.lock ./
 
-RUN go install vault-generator
+RUN cargo build
 
-# Development ############################
+CMD /bin/ls -d src/* | entr -s "cargo check && cargo test"
 
-FROM python:3.8.0 AS development
+# Production #############################
+
+FROM python:3.8.0 AS production
 
 RUN useradd -m vgen
 
 WORKDIR /home/vgen
 
-COPY --chown=vgen:vgen --from=build /go/bin/vault-generator .
+# COPY --chown=vgen:vgen --from=build /home/rust/target/
 
 RUN pip install ansible==2.8.3
 
 USER vgen
 
-CMD [ "/home/vgen/vault-generator" ]
-
-# Production #############################
-# Try to reduce image size
+# CMD [ "/home/vgen/vault-generator" ]

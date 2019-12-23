@@ -1,23 +1,29 @@
-FROM rust:1.31.0 AS development
-
-RUN useradd rust -m
+FROM rust:1.40.0 AS development
 
 WORKDIR /home/rust
 
-RUN curl -L http://eradman.com/entrproject/code/entr-4.3.tar.gz -o entr-4.3 \
-    && tar xvf entr-4.3 -C /tmp \
-    && cd /tmp/entr-4.3 \
-    && ./configure; make \
-    && ln -s /tmp/entr-4.3/entr /usr/local/bin
+RUN cargo install --version 7.3.0 cargo-watch
 
 COPY src ./src
 COPY Cargo.toml Cargo.lock ./
 
 RUN cargo build
 
-CMD /bin/ls -d src/* | entr -s "cargo check && cargo test"
+CMD cargo-watch -x check -x test -x run
 
-# Production #############################
+# Build Release #############################
+
+FROM rust:1.40.0 AS build-release
+
+WORKDIR /home/rust
+
+COPY --from=development /home/rust/src ./src
+
+COPY Cargo.toml Cargo.lock ./
+
+RUN cargo build --release
+
+# Production ################################
 
 FROM python:3.8.0 AS production
 

@@ -5,3 +5,4 @@ authors = ["anthony"]
 edition = "2018"
 
 [dependencies]
+rouille = "3.0.0"

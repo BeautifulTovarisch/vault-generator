@@ -1,8 +1,11 @@
 version: '3.7'
 services:
   server:
+    tty: true
     build:
       context: ./server
       target: 'development'
+    ports:
+      - 3000:3000
     volumes:
       - ./server/src:/go/src/vault-generator

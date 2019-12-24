@@ -1,30 +1,32 @@
-FROM golang:1.13.5 AS build
+FROM golang:1.13.5 AS development
 
-WORKDIR /go/src
+WORKDIR /go/src/vault-generator
 
-RUN useradd go -M
+# Install entr
+RUN curl -L http://eradman.com/entrproject/code/entr-4.3.tar.gz -o /tmp/entr-4.3 \
+    && tar xvf /tmp/entr-4.3 -C /tmp \
+    && cd /tmp/entr-4.3 \
+    && ./configure; make \
+    && ln -s /tmp/entr-4.3/entr /usr/local/bin
 
 COPY ./src /go/src/vault-generator
 
-RUN ls -l /go/src/vault-generator
+RUN go install -i
 
-RUN go install vault-generator
+CMD /bin/ls -d * | entr -s "go test && go run vault-generator"
 
-# Development ############################
-
-FROM python:3.8.0 AS development
+# Production #############################
+# TODO :: Try to reduce image size
+FROM python:3.8.0 AS production
 
 RUN useradd -m vgen
 
 WORKDIR /home/vgen
 
-COPY --chown=vgen:vgen --from=build /go/bin/vault-generator .
+COPY --chown=vgen:vgen --from=development /go/bin/vault-generator .
 
 RUN pip install ansible==2.8.3
 
 USER vgen
 
 CMD [ "/home/vgen/vault-generator" ]
-
-# Production #############################
-# Try to reduce image size

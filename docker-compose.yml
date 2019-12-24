@@ -5,4 +5,4 @@ services:
       context: ./server
       target: 'development'
     volumes:
-      - ./server/src:/home/go/src
+      - ./server/src:/go/src/vault-generator

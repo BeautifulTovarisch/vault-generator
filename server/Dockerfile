@@ -11,9 +11,9 @@ RUN curl -L http://eradman.com/entrproject/code/entr-4.3.tar.gz -o /tmp/entr-4.3
 
 COPY ./src /go/src/vault-generator
 
-RUN go install -i
+RUN go install -i vault-generator/main
 
-CMD /bin/ls * | entr -r sh -c "go test && go run vault-generator"
+CMD find -name "*.go" | entr -r sh -c "go test vault-generator/... && go run vault-generator/main"
 
 # Production #############################
 # TODO :: Try to reduce image size

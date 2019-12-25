@@ -13,7 +13,7 @@ COPY ./src /go/src/vault-generator
 
 RUN go install -i
 
-CMD /bin/ls -d * | entr -s "go test && go run vault-generator"
+CMD /bin/ls * | entr -r sh -c "go test && go run vault-generator"
 
 # Production #############################
 # TODO :: Try to reduce image size

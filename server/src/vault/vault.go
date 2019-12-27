@@ -24,20 +24,20 @@ func create_keyfile(key string) (*os.File, error) {
 }
 
 func encrypt_config(key string, config string) ([]byte, error) {
+	// Create keyfile with provided password
+	// Delete keyfile after encryption done
+	file, err := create_keyfile(key);
+	if err != nil { return nil, err }
+
+	defer os.Remove(file.Name())
+
 	// Prepare ansible-vault command
-	cmd := exec.Command("ansible-vault encrypt", "--vault-password-file", "/var/tmp/key")
+	cmd := exec.Command("ansible-vault encrypt", "--vault-password-file", file.Name())
 
 	if os.Getenv("environment") == "dev" {
 		// Run /bin/cat in dev mode
 		cmd = exec.Command("/bin/cat")
 	}
-
-	// Create keyfile with provided password
-	// Delete keyfile after encryption done
-	file, err := create_keyfile(key);
-	defer os.Remove(file.Name())
-
-	if err != nil { return nil, err }
 
 	stdin, err := cmd.StdinPipe()
 	if err != nil { return nil, err }

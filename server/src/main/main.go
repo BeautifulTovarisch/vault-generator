@@ -11,7 +11,6 @@ func handler(writer http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
-	fmt.Println("listening..")
 	http.HandleFunc("/", handler)
 	http.ListenAndServe("0.0.0.0:3000", routes.Routes())
 }

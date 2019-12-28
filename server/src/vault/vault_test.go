@@ -38,7 +38,7 @@ func TestEncryptConfig(t *testing.T) {
 }
 
 func TestEncryptHandler(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(_encrypt_handler))
+	server := httptest.NewServer(http.HandlerFunc(encrypt_handler))
 	defer server.Close()
 
 	endpoint := server.URL + "/v0/api/vault"
@@ -78,6 +78,22 @@ func TestEncryptHandler(t *testing.T) {
 		if err != nil { t.Error(err) }
 
 		res, err := http.Post(endpoint, "application/json", bytes.NewBuffer(payload))
+		if err != nil { t.Error(err) }
+
+		if res.StatusCode != 400 { t.Fail() }
+	})
+
+	t.Run("400 - Payload too large", func(t *testing.T) {
+		payload := make([]byte, 1048577, 1048577)
+
+		res, err := http.Post(endpoint, "application/json", bytes.NewReader(payload))
+		if err != nil { t.Error(err) }
+
+		if res.StatusCode != 400 { t.Fail() }
+	})
+
+	t.Run("400 - Empty Body", func(t *testing.T) {
+		res, err := http.Post(endpoint, "application/json", bytes.NewReader(make([]byte, 0)))
 		if err != nil { t.Error(err) }
 
 		if res.StatusCode != 400 { t.Fail() }

@@ -12,9 +12,10 @@ import (
 	"github.com/go-chi/chi"
 )
 
+// TODO :: Figure out a better name
 type Payload struct {
-	Key string `json:key`
-	Body string `json:body`
+	Key string
+	Body string
 }
 
 func create_keyfile(key string) (*os.File, error) {
@@ -30,10 +31,10 @@ func create_keyfile(key string) (*os.File, error) {
 	return file, nil
 }
 
-func encrypt_config(key string, config string) ([]byte, error) {
+func encrypt_config(payload *Payload) ([]byte, error) {
 	// Create keyfile with provided password
 	// Delete keyfile after encryption done
-	file, err := create_keyfile(key);
+	file, err := create_keyfile(payload.Key);
 	if err != nil { return nil, err }
 
 	defer os.Remove(file.Name())
@@ -51,7 +52,7 @@ func encrypt_config(key string, config string) ([]byte, error) {
 
 	go func() {
 		defer stdin.Close()
-		io.WriteString(stdin, config)
+		io.WriteString(stdin, payload.Body)
 	}()
 
 	return cmd.CombinedOutput()
@@ -98,7 +99,19 @@ func encrypt_handler(res http.ResponseWriter, req *http.Request) {
 
 	if (payload.Key == "") || (payload.Body == "") {
 		http.Error(res, "Missing key or Body", http.StatusBadRequest)
+		return
 	}
+
+	encrypted, err := encrypt_config(&payload)
+
+	if err != nil {
+		http.Error(res, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	res.Header().Set("Content-Type", "application/json")
+	res.WriteHeader(http.StatusOK)
+	res.Write(encrypted)
 }
 
 func Routes() *chi.Mux {

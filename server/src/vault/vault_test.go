@@ -29,12 +29,10 @@ func TestCreateKeyfile(t *testing.T) {
 // as ansible is not installed in the development environment
 func TestEncryptConfig(t *testing.T) {
 	test_string := "{'key':'key','another_key':'another_key','array':[1,2,3],'nested':{'a':1.2,'b':false}}"
-	result, err := encrypt_config("test_key", test_string);
+	result, err := encrypt_config(&Payload { Key: "test_key", Body: test_string });
 	if err != nil { t.Error(err) }
 
-	if string(result) != test_string {
-		t.Fail()
-	}
+	if string(result) != test_string { t.Fail() }
 }
 
 func TestEncryptHandler(t *testing.T) {
@@ -43,10 +41,12 @@ func TestEncryptHandler(t *testing.T) {
 
 	endpoint := server.URL + "/v0/api/vault"
 
+	test_body := "{'key':'key','another_key':'another_key','array':[1,2,3]}"
+
 	t.Run("200", func(t *testing.T) {
 		payload, err := json.Marshal(Payload {
 			Key: "test_key",
-			Body: "{'key':'key','another_key':'another_key','array':[1,2,3]}",
+			Body: test_body,
 		})
 
 		if err != nil { t.Error(err) }
@@ -54,13 +54,18 @@ func TestEncryptHandler(t *testing.T) {
 		res, err := http.Post(endpoint, "application/json", bytes.NewBuffer(payload))
 		if err != nil { t.Error(err) }
 
+		defer res.Body.Close()
+
+		body, err := ioutil.ReadAll(res.Body)
+		if err != nil { t.Error(err) }
+
 		if res.StatusCode != 200 { t.Fail() }
+		if string(body) != test_body { t.Fail() }
 	})
 
 	t.Run("400 - Missing Key", func(t *testing.T) {
-
 		payload, err := json.Marshal(Payload {
-			Body: "{'key':'key','another_key':'another_key','array':[1,2,3]}",
+			Body: test_body,
 		})
 		if err != nil { t.Error(err) }
 

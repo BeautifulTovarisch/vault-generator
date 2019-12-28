@@ -6,9 +6,15 @@ import (
 	"os/exec"
 	"net/http"
 	"io/ioutil"
+	"encoding/json"
 
 	"github.com/go-chi/chi"
 )
+
+type Payload struct {
+	Key string `json:key`
+	Body string `json:body`
+}
 
 func create_keyfile(key string) (*os.File, error) {
 	file, err := ioutil.TempFile("", "key")
@@ -50,12 +56,22 @@ func encrypt_config(key string, config string) ([]byte, error) {
 	return cmd.CombinedOutput()
 }
 
-func _handle_encrypt(res http.ResponseWriter, req *http.Request) {
+func _encrypt_handler(res http.ResponseWriter, req *http.Request) {
+	var payload Payload
+	decoder := json.NewDecoder(req.Body)
 
+	err := decoder.Decode(&payload)
+	if err != nil {
+		http.Error(res, err.Error(), http.StatusBadRequest)
+	}
+
+	if (payload.Key == "") || (payload.Body == "") {
+		http.Error(res, "Missing key or Body", http.StatusBadRequest)
+	}
 }
 
 func Routes() *chi.Mux {
 	router := chi.NewRouter()
-	router.Post("/", _handle_encrypt)
+	router.Post("/", _encrypt_handler)
 	return router
 }

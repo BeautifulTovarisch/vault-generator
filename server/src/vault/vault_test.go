@@ -2,10 +2,12 @@ package vault
 
 import (
 	"os"
+	"bytes"
 	"testing"
-	// "net/http"
+	"net/http"
 	"io/ioutil"
-	// "net/http/httptest"
+	"encoding/json"
+	"net/http/httptest"
 )
 
 func TestCreateKeyfile(t *testing.T) {
@@ -36,5 +38,48 @@ func TestEncryptConfig(t *testing.T) {
 }
 
 func TestEncryptHandler(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(_encrypt_handler))
+	defer server.Close()
 
+	endpoint := server.URL + "/v0/api/vault"
+
+	t.Run("200", func(t *testing.T) {
+		payload, err := json.Marshal(Payload {
+			Key: "test_key",
+			Body: "{'key':'key','another_key':'another_key','array':[1,2,3]}",
+		})
+
+		if err != nil { t.Error(err) }
+
+		res, err := http.Post(endpoint, "application/json", bytes.NewBuffer(payload))
+		if err != nil { t.Error(err) }
+
+		if res.StatusCode != 200 { t.Fail() }
+	})
+
+	t.Run("400 - Missing Key", func(t *testing.T) {
+
+		payload, err := json.Marshal(Payload {
+			Body: "{'key':'key','another_key':'another_key','array':[1,2,3]}",
+		})
+		if err != nil { t.Error(err) }
+
+		res, err := http.Post(endpoint, "application/json", bytes.NewBuffer(payload))
+		if err != nil { t.Error(err) }
+
+		if res.StatusCode != 400 { t.Fail() }
+	})
+
+	t.Run("400 - Missing Body", func(t *testing.T) {
+
+		payload, err := json.Marshal(Payload {
+			Key: "test_key",
+		})
+		if err != nil { t.Error(err) }
+
+		res, err := http.Post(endpoint, "application/json", bytes.NewBuffer(payload))
+		if err != nil { t.Error(err) }
+
+		if res.StatusCode != 400 { t.Fail() }
+	})
 }

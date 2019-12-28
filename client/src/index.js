@@ -13,4 +13,4 @@ class App extends Component {
     }
 }
 
-ReactDom.render(<App />, document.getElementById('mount-point'));
+ReactDom.render(<App />, document.getElementById('react-mount-point'));

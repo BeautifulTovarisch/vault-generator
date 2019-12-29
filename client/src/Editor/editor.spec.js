@@ -21,7 +21,7 @@ jest.mock('ace-builds/src-noconflict/mode-json', () => "");
 jest.mock('ace-builds/src-noconflict/theme-github', () => "");
 
 test('<Editor/>', () => {
-    const component = create(<Editor />);
-    console.log(component.root);
+    const component = create(<Editor/>);
+    console.log(component.root._fiber.memoizedState);
     expect(true).toBe(true);
 });

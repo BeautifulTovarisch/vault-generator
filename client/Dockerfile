@@ -8,7 +8,7 @@ COPY package.json yarn.lock /app/
 
 RUN yarn
 
-COPY ./src /app/src
+COPY . /app
 
 RUN yarn test --passWithNoTests
 

@@ -9,7 +9,9 @@ const cssLoader = isDev ? 'style-loader' : MiniCssExtractPlugin.loader;
 
 module.exports = {
     entry: {
-        main: [ path.resolve(__dirname, 'src/index.js') ]
+        main: [
+            path.resolve(__dirname, 'src/index.js')
+        ]
     },
     output: {
         path: path.resolve(__dirname, 'dist'),

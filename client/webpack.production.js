@@ -10,11 +10,6 @@ const commonConfig = require( './webpack.config' );
 
 const productionConfig = {
     mode: 'production',
-    output: {
-        path: path.resolve( __dirname, './dist' ),
-        filename: '[name].bundle.js',
-        sourceMapFilename: '[name].bundle.map'
-    },
     devtool: 'source-map',
     optimization: {
         minimizer: [
@@ -29,4 +24,4 @@ const productionConfig = {
     ]
 };
 
-module.exports = merge( commonConfig, productionConfig );
+module.exports = merge(commonConfig, productionConfig);

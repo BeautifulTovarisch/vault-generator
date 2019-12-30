@@ -10,7 +10,7 @@ import "ace-builds/src-noconflict/theme-github.js";
 
 import { encryptConfig } from './editor.api';
 
-const Editor = ({ setError, setOutput }) => {
+const Editor = ({ setError, setResponse }) => {
     // We don't define a default key here as it should prevent the post request if undefined
     const [state, setState] = useState({
         config: "{}",
@@ -37,9 +37,11 @@ const Editor = ({ setError, setOutput }) => {
                 setError({ message: "Encryption key required." });
                 return;
             }
-            const { data } = await encryptConfig({ key: state.key,
-                                                   body: state.config });
-            setOutput(data);
+            const { data, headers } = await encryptConfig({ key: state.key,
+                                                            body: state.config });
+
+            console.log(headers["content-disposition"]);
+            setResponse(data);
         } catch(e) {
             setError(e);
         } finally {
@@ -61,7 +63,8 @@ const Editor = ({ setError, setOutput }) => {
                 theme="github"
                 name="json-editor"
                 value={ state.config }
-                className="mb-2"
+                className="mb-2 w-100"
+                showPrintMargin={ false }
                 onChange={ _handleConfigChange } />
               <button
                 type="button"

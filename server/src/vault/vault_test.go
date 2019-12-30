@@ -1,8 +1,11 @@
 package vault
 
 import (
+	"io"
 	"os"
 	"bytes"
+	"strings"
+	"os/exec"
 	"testing"
 	"net/http"
 	"io/ioutil"
@@ -25,14 +28,26 @@ func TestCreateKeyfile(t *testing.T) {
 	}
 }
 
-// NOTE: What this will really test is whether the stdinpipe is used correctly
+// NOTE: What this will really test is whether the stdin is properly handled
 // as ansible is not installed in the development environment
 func TestEncryptConfig(t *testing.T) {
 	test_string := "{'key':'key','another_key':'another_key','array':[1,2,3],'nested':{'a':1.2,'b':false}}"
 	result, err := encrypt_config(&Payload { Key: "test_key", Body: test_string });
 	if err != nil { t.Error(err) }
 
-	if string(result) != test_string { t.Fail() }
+	cmd := exec.Command("/usr/bin/gpg", "-d", "--batch", "--passphrase", "test_key", "-")
+	stdin, err := cmd.StdinPipe()
+
+	go func() {
+		defer stdin.Close()
+		io.WriteString(stdin, string(result))
+	}()
+
+	decrypted, err := cmd.CombinedOutput()
+
+	if err != nil { t.Error(err) }
+
+	if !strings.Contains(string(decrypted), test_string) { t.Fail() }
 }
 
 func TestEncryptHandler(t *testing.T) {
@@ -56,11 +71,9 @@ func TestEncryptHandler(t *testing.T) {
 
 		defer res.Body.Close()
 
-		body, err := ioutil.ReadAll(res.Body)
 		if err != nil { t.Error(err) }
 
 		if res.StatusCode != 200 { t.Fail() }
-		if string(body) != test_body { t.Fail() }
 	})
 
 	t.Run("400 - Missing Key", func(t *testing.T) {
@@ -76,7 +89,6 @@ func TestEncryptHandler(t *testing.T) {
 	})
 
 	t.Run("400 - Missing Body", func(t *testing.T) {
-
 		payload, err := json.Marshal(Payload {
 			Key: "test_key",
 		})

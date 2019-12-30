@@ -44,8 +44,8 @@ func encrypt_config(payload *Payload) ([]byte, error) {
 	cmd := exec.Command("ansible-vault encrypt", "--vault-password-file", file.Name())
 
 	if os.Getenv("environment") == "dev" {
-		// Run /bin/cat in dev mode
-		cmd = exec.Command("/bin/cat")
+		// Run gpg in dev mode
+		cmd = exec.Command("/usr/bin/gpg", "-c", "--batch", "--passphrase-file", file.Name(), "-")
 	}
 
 	stdin, err := cmd.StdinPipe()
@@ -105,12 +105,15 @@ func encrypt_handler(res http.ResponseWriter, req *http.Request) {
 
 	encrypted, err := encrypt_config(&payload)
 
+	encrypted = []byte("hello")
+
 	if err != nil {
 		http.Error(res, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	res.Header().Set("Content-Type", "application/json")
+	res.Header().Set("Content-Disposition", "attachment; encrypted.vault")
 	res.WriteHeader(http.StatusOK)
 	res.Write(encrypted)
 }

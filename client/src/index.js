@@ -1,21 +1,32 @@
 'use strict';
 
-import React, { useState, Component } from 'react';
+import React, { useState, useEffect, Component } from 'react';
 import ReactDom from 'react-dom';
 
 import "regenerator-runtime/runtime";
 
 import Editor from './Editor/editor';
-import Output from './Output/output';
 
 const App = () => {
     const [state, setState] = useState({
         error: {},
-        output: ""
+        response: ""
     });
 
     const setError = err => setState(state => ({...state, error: err }));
-    const setOutput = out => setState(state => ({...state, output: out}));
+    const setResponse = res => setState(state => ({...state, response: res}));
+
+    useEffect(() => {
+        if (!state.response || state.error.message) return;
+
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(new Blob([state.response]));
+        link.download = "vault";
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
 
     return (
             <div id="wrapper" className="h-100">
@@ -29,11 +40,7 @@ const App = () => {
                   <div className="row">
                     <div className="col-sm">
                       <h2>Input</h2>
-                      <Editor setError={setError} setOutput={setOutput} />
-                    </div>
-                    <div className="col-sm">
-                      <h2>Output</h2>
-                      <Output error={state.error} output={state.output} />
+                      <Editor setError={setError} setResponse={setResponse} />
                     </div>
                   </div>
               </div>

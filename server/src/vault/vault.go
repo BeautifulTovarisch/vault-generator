@@ -45,7 +45,9 @@ func encrypt_config(payload *Payload) ([]byte, error) {
 
 	if os.Getenv("environment") == "dev" {
 		// Run gpg in dev mode
-		cmd = exec.Command("/usr/bin/gpg", "-c", "--batch", "--passphrase-file", file.Name(), "-")
+		cmd = exec.Command("/usr/bin/openssl", "enc",
+			"-aes-256-cbc", "-pbkdf2", "-iter", "20000",
+			"-kfile", file.Name())
 	}
 
 	stdin, err := cmd.StdinPipe()
@@ -104,8 +106,6 @@ func encrypt_handler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	encrypted, err := encrypt_config(&payload)
-
-	encrypted = []byte("hello")
 
 	if err != nil {
 		http.Error(res, err.Error(), http.StatusInternalServerError)

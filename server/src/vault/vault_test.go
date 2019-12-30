@@ -35,7 +35,10 @@ func TestEncryptConfig(t *testing.T) {
 	result, err := encrypt_config(&Payload { Key: "test_key", Body: test_string });
 	if err != nil { t.Error(err) }
 
-	cmd := exec.Command("/usr/bin/gpg", "-d", "--batch", "--passphrase", "test_key", "-")
+	cmd := exec.Command("/usr/bin/openssl", "enc",
+		"-d", "-aes-256-cbc", "-pbkdf2", "-iter", "20000",
+		"-k", "test_key")
+
 	stdin, err := cmd.StdinPipe()
 
 	go func() {

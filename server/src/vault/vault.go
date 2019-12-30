@@ -5,6 +5,7 @@ import (
 	"os"
 	"errors"
 	"os/exec"
+	"strings"
 	"net/http"
 	"io/ioutil"
 	"encoding/json"
@@ -63,8 +64,8 @@ func encrypt_handler(res http.ResponseWriter, req *http.Request) {
 	const MAX_BYTES = 1048576
 
 	// Enforce application/json
-	if req.Header.Get("Content-Type") != "application/json" {
-		http.Error(res, "Content Type must be 'application/json'", http.StatusUnsupportedMediaType)
+	if !strings.Contains(req.Header.Get("Content-Type"), "application/json") {
+		http.Error(res, "Content Type must be 'application'", http.StatusUnsupportedMediaType)
 		return
 	}
 

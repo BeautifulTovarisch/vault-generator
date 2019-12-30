@@ -3,7 +3,7 @@ const merge = require( 'webpack-merge' );
 const webpack = require( 'webpack' );
 const commonConfig = require( './webpack.config' );
 
-const PORT = process.env.PORT || '3000';
+const SERVER_PORT = process.env.PORT || '2305';
 const WEBPACK_HOST = '0.0.0.0';
 const WEBPACK_PORT = '3000';
 
@@ -21,7 +21,7 @@ const devConfig = {
         contentBase: path.resolve(__dirname, '/dist'),
         historyApiFallback: true,
         proxy: {
-            '/api': `http://server:${PORT}`
+            '/v0/api': `http://server:${SERVER_PORT}`
         }
     }
 };

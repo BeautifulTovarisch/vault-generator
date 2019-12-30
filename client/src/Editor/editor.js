@@ -17,10 +17,10 @@ const Editor = ({ setError, setOutput }) => {
         loading: false
     });
 
-    const _handleKeyChange = useCallback(e => {
+    const _handleKeyChange = e => {
         e.persist();
         setState(state => ({ ...state, key: e.target.value }));
-    });
+    };
 
     const _handleConfigChange = value => {
         setState(state => ({ ...state, config: value }));

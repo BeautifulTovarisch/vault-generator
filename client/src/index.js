@@ -26,7 +26,7 @@ const App = () => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-    });
+    }, [state.response]);
 
     return (
             <div id="wrapper" className="h-100">

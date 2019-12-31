@@ -32,6 +32,33 @@ TODO
 
 Development is facilitated by Docker images tailored to provide a consistent, test-driven environment across platforms.
 
+### Development Encryption ###
+
+During development, `openssl` rather than `ansible-vault` is used to encrypt the provided data. This was mainly done in order to keep the development environments lean while approximating the symmetric encryption workflow using ansible (openssl came for free with the Go container).
+
+The encryption/decryption can be performed manually with the following:
+
+#### Encryption ####
+
+```bash
+# From stdin
+$ echo "secret text" | openssl enc -a -aes-256-cbc -pbkdf2 -iter 20000 -k <key>
+
+# From a file
+$ openssl enc -a -aes-256-cbc -pbkdf2 -iter 20000 -k <passphrase> -in <filename>
+```
+
+#### Decryption ####
+
+```bash
+# From stdin
+$ openssl enc -d -a -aes-256-cbc -pbkdf2 -iter 20000 -k <key> -in <encrypted_file>
+```
+
+> **Note**: `-kfile` may be used in place of `-k` in order to provide a path to a file containing the desired secret key. (e.g. `-kfile /data/secret.txt`)
+
+Consult the `$ man openssl` page or type `$ openssl help` for more information.
+
 ### Requirements ###
 
 |Software|Version|

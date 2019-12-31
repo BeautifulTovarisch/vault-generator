@@ -4,13 +4,13 @@
 
 A dead simple, wildly insecure application for turning arbitrary configuration data into an encrypted ansible vault. Written mainly in order to experiment with Go and modern React features.
 
-The simple interface allows users to edit code via the Ace editor. The specified encryption key and text body are encrypted by a small microservice written in Go.
+The simple interface allows users to edit code via the Ace editor. A small microservice written in Go encrypts the configuration body using the provided encryption key.
 
-## Installation ##
+## Table of Contents ##
 
 TODO
 
-## Table of Contents ##
+## Installation ##
 
 TODO
 

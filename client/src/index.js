@@ -40,6 +40,7 @@ const App = () => {
                   <div className="row">
                     <div className="col-sm">
                       <h2>Input</h2>
+                      { state.error && <p className="text-danger">{ state.error.message }</p> }
                       <Editor setError={setError} setResponse={setResponse} />
                     </div>
                   </div>

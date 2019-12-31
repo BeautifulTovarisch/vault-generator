@@ -30,17 +30,18 @@ const Editor = ({ setError, setResponse }) => {
         // Prevent spamming the submit button
         if(state.loading) return;
 
+        if(!state.key) {
+            setError({ message: "Encryption key required." });
+            return;
+        }
+
         setState(state => ({ ...state, loading: true }));
 
         try {
-            if(!state.key) {
-                setError({ message: "Encryption key required." });
-                return;
-            }
-            const { data, headers } = await encryptConfig({ key: state.key,
+            const { data, headers } = await encryptConfig({ key: state.key.trim(),
                                                             body: state.config });
 
-            console.log(headers["content-disposition"]);
+            setError({});
             setResponse(data);
         } catch(e) {
             setError(e);

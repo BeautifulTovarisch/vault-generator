@@ -36,7 +36,7 @@ func TestEncryptConfig(t *testing.T) {
 	if err != nil { t.Error(err) }
 
 	cmd := exec.Command("/usr/bin/openssl", "enc",
-		"-d", "-aes-256-cbc", "-pbkdf2", "-iter", "20000",
+		"-a", "-d", "-aes-256-cbc", "-pbkdf2", "-iter", "20000",
 		"-k", "test_key")
 
 	stdin, err := cmd.StdinPipe()

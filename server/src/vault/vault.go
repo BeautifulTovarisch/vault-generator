@@ -46,7 +46,7 @@ func encrypt_config(payload *Payload) ([]byte, error) {
 	if os.Getenv("environment") == "dev" {
 		// Run gpg in dev mode
 		cmd = exec.Command("/usr/bin/openssl", "enc",
-			"-aes-256-cbc", "-pbkdf2", "-iter", "20000",
+			"-a", "-aes-256-cbc", "-pbkdf2", "-iter", "20000",
 			"-kfile", file.Name())
 	}
 

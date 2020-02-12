@@ -28,7 +28,7 @@ RUN useradd -m vgen
 
 WORKDIR /home/vgen
 
-COPY --chown=vgen:vgen --from=development /go/bin/vault-generator .
+COPY --chown=vgen:vgen --from=development /go/bin/main .
 
 RUN pip install ansible==2.8.3
 

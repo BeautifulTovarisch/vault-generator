@@ -5,7 +5,7 @@
     - name: "Common configuration"
       import_tasks: tasks/common.yml
 
-- hosts: master
+- hosts: controller
   tasks:
     - name: "Kubernetes master host"
       import_tasks: tasks/master.yml

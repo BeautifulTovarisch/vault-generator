@@ -1,0 +1,11 @@
+---
+# Node configuration
+
+- name: "Create join token from master host"
+  command: kubeadm token create --print-join-command
+  register: join_command
+  delegate_to: master
+
+- name: "Join k8s cluster"
+  command: "{{ join_command.stdout }}"
+  become: True

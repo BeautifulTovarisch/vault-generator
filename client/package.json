@@ -1,0 +1,50 @@
+{
+    "name": "vault-generator",
+    "version": "1.0.0",
+    "description": "Web utility to generate ansible vault files",
+    "main": "index.js",
+    "repository": "https://github.com/BeautifulTovarisch/vault-generator",
+    "author": "Anthony",
+    "license": "MIT",
+    "private": false,
+    "scripts": {
+        "test": "jest",
+        "build": "webpack --config webpack.production.js",
+        "dev-server": "webpack-dev-server --hot --config webpack.dev.js",
+        "test-watch": "jest --watchAll",
+        "start": "run-p dev-server test-watch"
+    },
+    "jest": {
+        "transform": {
+            "^.+\\.jsx?$": "babel-jest"
+        }
+    },
+    "dependencies": {
+        "axios": "^0.19.0",
+        "react": "^16.12.0",
+        "react-ace": "^8.0.0",
+        "react-dom": "^16.12.0"
+    },
+    "devDependencies": {
+        "@babel/cli": "^7.7.7",
+        "@babel/core": "^7.7.7",
+        "@babel/preset-env": "^7.7.7",
+        "@babel/preset-react": "^7.7.4",
+        "babel-jest": "^24.9.0",
+        "babel-loader": "^8.0.6",
+        "copy-webpack-plugin": "^5.1.1",
+        "css-loader": "^3.4.0",
+        "file-loader": "^5.0.2",
+        "jest": "^24.9.0",
+        "mini-css-extract-plugin": "^0.9.0",
+        "npm-run-all": "^4.1.5",
+        "optimize-css-assets-webpack-plugin": "^5.0.3",
+        "react-test-renderer": "^16.12.0",
+        "regenerator-runtime": "^0.13.3",
+        "terser-webpack-plugin": "^2.3.1",
+        "webpack": "^4.41.5",
+        "webpack-cli": "^3.3.10",
+        "webpack-dev-server": "^3.10.1",
+        "webpack-merge": "^4.2.2"
+    }
+}

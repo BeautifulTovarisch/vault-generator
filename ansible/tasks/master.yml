@@ -1,0 +1,51 @@
+---
+- name: "Reset cluster"
+  command: kubeadm reset -f
+  become: True
+
+- name: "Initialize cluster"
+  command: >-
+    kubeadm init --apiserver-advertise-address="192.168.0.10" \
+    --apiserver-cert-extra-sans="192.168.0.10" \
+    --node-name master --pod-network-cidr=192.168.0.0/16
+  become: True
+
+- name: "Create config directory for vagrant user"
+  file:
+    path: /home/vagrant/.kube
+    state: directory
+
+- name: "Copy configuration into vagrant directory"
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: /home/vagrant/.kube/config
+    owner: vagrant
+    group: vagrant
+    backup: True
+    remote_src: True
+  become: True
+
+- name: "Copy network configuration"
+  copy:
+    src: config/calico.yaml
+    dest: /home/vagrant/calico.yaml
+
+- name: "Install pip"
+  apt:
+    name: python3-pip
+    state: present
+  become: True
+
+- name: "Install python libraries needed for k8s module"
+  pip:
+    name:
+      - openshift>=0.6
+      - PyYAML>=3.1.1
+      - kubernetes-validate
+
+- name: "Configure calico network policy"
+  k8s:
+    src: /home/vagrant/calico.yaml
+    state: present
+    validate:
+      fail_on_error: True

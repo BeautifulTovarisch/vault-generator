@@ -1,5 +1,4 @@
-/target
-**/*.rs.bk
-
-/target
-**/*.rs.bk
+*.log
+dist/
+node_modules/
+.vagrant/

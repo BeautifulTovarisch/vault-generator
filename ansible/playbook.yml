@@ -1,0 +1,16 @@
+---
+# Install and configure Kubernetes cluster
+- hosts: all
+  tasks:
+    - name: "Common configuration"
+      import_tasks: tasks/common.yml
+
+- hosts: controller
+  tasks:
+    - name: "Kubernetes master host"
+      import_tasks: tasks/master.yml
+
+- hosts: nodes
+  tasks:
+    - name: "Kubernetes nodes"
+      import_tasks: tasks/node.yml
